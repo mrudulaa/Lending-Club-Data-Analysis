@@ -1,0 +1,25 @@
+---
+title: "loan_analysis"
+author: "Oviya Arasu"
+date: "December 10, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+loan <- read.csv("~/Downloads/loan.csv")
+mysample <- loan[sample(1:nrow(loan), 400,
+  	replace=FALSE),]
+mysample_subset <- mysample[,c(3,6,12,13,14,18,21,25,33,7)]
+head(mysample_subset, n= 10)
+mysample_subset = mysample_subset[complete.cases(mysample_subset),]
+
+mysample_subset = mysample_subset[complete.cases(mysample_subset),]
+write.csv(mysample_subset, file = "loan_data.csv")
+
+```
+
+
