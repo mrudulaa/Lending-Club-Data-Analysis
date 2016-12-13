@@ -1,25 +1,61 @@
 ---
-title: "loan_analysis"
-author: "Oviya Arasu"
-date: "December 10, 2016"
-output: html_document
+title: 'STAT 420 Final Project: Lending Club'
+author: "Fall 2016, Elsa Hsin-Jung Wang"
+date: 'Due: Wednesday, December 14 by 11:50 PM CT'
+output:
+  html_document:
+    theme: readable
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ```{r}
-loan <- read.csv("~/Downloads/loan.csv")
-mysample <- loan[sample(1:nrow(loan), 400,
-  	replace=FALSE),]
-mysample_subset <- mysample[,c(3,6,12,13,14,18,21,25,33,7)]
-head(mysample_subset, n= 10)
-mysample_subset = mysample_subset[complete.cases(mysample_subset),]
+loan_data <- read.csv("~/Desktop/STAT420_Methods of Applied Stats/project/loan_data_cleaned.csv")
+interest_mod = lm(int_rate~., data = loan_data)
+interest_mod_back_aic = step(interest_mod, direction = "backward")
+interest_mod_forw_aic = step(interest_mod, direction = "forward")
+interest_mod_both_aic = step(interest_mod, direction = "both")
+library(leaps)
+all_interest_mod = summary(regsubsets(int_rate~., data = loan_data))
+all_interest_mod$which
+n = length(resid(interest_mod))
+p = length(coef(interest_mod))
+interest_mod_aic = n*log(all_interest_mod$rss/n)+2*(2:p)
+best_aic_ind = which.min(interest_mod_aic)
+summary(interest_mod_back_aic)$adj.r.squared
+summary(interest_mod_forw_aic)$adj.r.squared
+summary(interest_mod_both_aic)$adj.r.squared
 
-mysample_subset = mysample_subset[complete.cases(mysample_subset),]
-write.csv(mysample_subset, file = "loan_data.csv")
 
+
+interest_mod = lm(int_rate~., data = loan_data)
+
+
+interest_mod_poly = lm(int_rate~.^2, data = loan_data)
+interest_mod_back_aic_poly = step(interest_mod_poly, direction = "backward")
+interest_mod_forw_aic_poly = step(interest_mod_poly, direction = "forward")
+interest_mod_both_aic_poly= step(interest_mod_poly, direction = "both")
+summary(interest_mod_back_aic_poly)$adj.r.squared
+summary(interest_mod_forw_aic_poly)$adj.r.squared
+summary(interest_mod_both_aic_poly)$adj.r.squared
+
+#interest_mod_interaction = lm(int_rate~loan_amnt+term+emp_length+dti+revol_bal+loan_amnt:mortgage+loan_amnt:own+loan_amnt:rent+loan_amnt:home+loan_amnt:house+loan_amnt:moving+loan_amnt:credit+loan_amnt:purchase+loan_amnt:wedding+loan_amnt:car+loan_amnt:debt+loan_amnt:medical+loan_amnt:business+loan_amnt:other+loan_amnt:vacation+I(loan_amnt^2)+I(term^2)+I(emp_length)+I(annual_inc)+I(dti^2)+I(revol_bal^2), data = loan_data)
+
+#interest_mod_back_aic_interaction = step(interest_mod_interaction, direction = "backward")
+#interest_mod_forw_aic_interaction= step(interest_mod_interaction, direction = "forward")
+#interest_mod_both_aic_interaction = step(interest_mod_interaction, direction = "both")
+#summary(interest_mod_back_aic_interaction)$adj.r.squared
+#summary(interest_mod_forw_aic_interaction)$adj.r.squared
+#summary(interest_mod_both_aic_interaction)$adj.r.squared
+
+
+#interest_mod_interaction = lm(int_rate~.^2+loan_amnt:mortgage+loan_amnt:own+loan_amnt:rent+loan_amnt:home+loan_amnt:house+loan_amnt:moving+loan_amnt:credit+loan_amnt:purchase+loan_amnt:wedding+loan_amnt:car+loan_amnt:debt+loan_amnt:medical+loan_amnt:business+loan_amnt:other+loan_amnt:vacation, data = loan_data)
+
+#interest_mod_back_aic_interaction = step(interest_mod_interaction, direction = "backward")
+#interest_mod_forw_aic_interaction= step(interest_mod_interaction, direction = "forward")
+#interest_mod_both_aic_interaction = step(interest_mod_interaction, direction = "both")
+#summary(interest_mod_back_aic_interaction)$adj.r.squared
+#summary(interest_mod_forw_aic_interaction)$adj.r.squared
+#summary(interest_mod_both_aic_interaction)$adj.r.squared
+
+#plot(int_rate~loan_amnt, data = loan_data )
 ```
-
 
